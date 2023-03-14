@@ -1,7 +1,7 @@
 # Lexer
 
 ## UML
-![lexer](/Users/lichen/Desktop/CSKnowledge/Charrylang/docs/diagram/out/Lexer.png)
+![lexer](./diagram/out/Lexer.png)
 
 ## Types
 

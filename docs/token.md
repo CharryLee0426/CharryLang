@@ -2,7 +2,7 @@
 
 ## UML
 
-![token](/Users/lichen/Desktop/CSKnowledge/Charrylang/docs/diagram/out/token.png)
+![token](./diagram/out/token.png)
 
 ## Types
 
