@@ -137,7 +137,7 @@ Boolean is also a must-have in every programming language. It stores a boolean's
 | Name  | Description                                                  |
 | ----- | ------------------------------------------------------------ |
 | Token | a token that contains a boolean's literal (true or false), should be "IDENT" |
-| Value | a value that contains real bool value in go which can be handled in father language |
+| Value | a value that contains real bool value in go which can be handled in host language |
 
 ### 3. IntegerLiteral
 
@@ -146,7 +146,7 @@ IntegerLiteral can represent an integer as an expression. It is an important com
 | Name  | Description                                                  |
 | ----- | ------------------------------------------------------------ |
 | Token | a token that marks an integer literal, should be "INT"       |
-| Value | a value that contains real int value in go which can be handled in father language |
+| Value | a value that contains real int value in go which can be handled in host language |
 
 ### 4. FunctionLiteral
 
