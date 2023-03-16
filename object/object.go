@@ -29,5 +29,5 @@ func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
 
 type Null struct {}
 func (n *Null) Inspect() string { return "null" }
-func (n *Null) String() ObjectType { return NULL_OBJ }
+func (n *Null) Type() ObjectType { return NULL_OBJ }
 
