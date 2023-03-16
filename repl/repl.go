@@ -2,10 +2,11 @@ package repl
 
 import (
 	"bufio"
+	"charrylang/evaluator"
+	"charrylang/lexer"
+	"charrylang/parser"
 	"fmt"
 	"io"
-	"charrylang/parser"
-	"charrylang/lexer"
 )
 
 const PROMPT = ">>"
@@ -34,8 +35,11 @@ func Start(in io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }
 
