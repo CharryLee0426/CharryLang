@@ -23,7 +23,8 @@ func Eval(node ast.Node) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
-		return &object.Boolean{Value: node.Value}
+		// return &object.Boolean{Value: node.Value} BAD IMPLEMENTATION! TOO MANY SAME OBEJCTS IN OUR MEMORY
+		return nativeBoolToBooleanObject(node.Value)
 	case *ast.PrefixExpression:
 		right := Eval(node.Right)
 		return evalPrefixExpression(node.Operator, right)
@@ -60,20 +61,14 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 // !false -> true; !true -> false
 func evalBangOperatorExpression(right object.Object) object.Object {
 	// bug here, and Thorsten Ball has no idea about it
-	switch realRight := right.(type) {
-	case *object.Boolean:
-		if realRight.Value == true {
-			return FALSE
-		} else {
-			return TRUE
-		}
-	case *object.Integer:
-		if realRight.Value == 0 {
-			return TRUE
-		} else {
-			return FALSE
-		}
-	case *object.Null:
+	// update: not bug, my fault...
+
+	switch right {
+	case TRUE:
+		return FALSE
+	case FALSE:
+		return TRUE
+	case NULL:
 		return TRUE
 	default:
 		return FALSE
@@ -93,6 +88,10 @@ func evalInfixExpression(left, right object.Object, operator string) object.Obje
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(left, right, operator)
+	case operator == "==":
+		return nativeBoolToBooleanObject(left == right)
+	case operator == "!=":
+		return nativeBoolToBooleanObject(left != right)
 	default:
 		return NULL
 	}
@@ -111,8 +110,24 @@ func evalIntegerInfixExpression(left, right object.Object, operator string) obje
 		return &object.Integer{Value: leftVal * rightVal}
 	case "/":
 		return &object.Integer{Value: leftVal / rightVal}
+	case "<":
+		return nativeBoolToBooleanObject(leftVal < rightVal)
+	case ">":
+		return nativeBoolToBooleanObject(leftVal > rightVal)
+	case "==":
+		return nativeBoolToBooleanObject(leftVal == rightVal)
+	case "!=":
+		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return NULL
 	}
 }
 
+// it can let us use TRUE or FALSE only 2 addresses
+func nativeBoolToBooleanObject(native bool) object.Object {
+	if native {
+		return TRUE
+	} else {
+		return FALSE
+	}
+}
