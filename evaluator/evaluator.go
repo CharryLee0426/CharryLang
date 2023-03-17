@@ -63,6 +63,12 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 	// bug here, and Thorsten Ball has no idea about it
 	// update: not bug, my fault...
 
+	// if right is a number, it will be true except it is zero
+	if right.Type() == object.INTEGER_OBJ {
+		if right.(*object.Integer).Value == 0 {
+			right = FALSE
+		}
+	}
 	switch right {
 	case TRUE:
 		return FALSE
