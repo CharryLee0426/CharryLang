@@ -27,6 +27,10 @@ func Eval(node ast.Node) object.Object {
 	case *ast.PrefixExpression:
 		right := Eval(node.Right)
 		return evalPrefixExpression(node.Operator, right)
+	case *ast.InfixExpression:
+		left := Eval(node.Left)
+		right := Eval(node.Right)
+		return evalInfixExpression(left, right, node.Operator)
 	}
 
 	return nil
@@ -46,6 +50,8 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	switch operator {
 	case "!":
 		return evalBangOperatorExpression(right)
+	case "-":
+		return evalMinusPrefixOperatorExpression(right)
 	default:
 		return NULL
 	}
@@ -53,34 +59,60 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 
 // !false -> true; !true -> false
 func evalBangOperatorExpression(right object.Object) object.Object {
-	// right is switched by real value but not reference
-	switch right {
-	case TRUE:
-		return FALSE
-	case FALSE:
-		return TRUE
-	case NULL:
+	// bug here, and Thorsten Ball has no idea about it
+	switch realRight := right.(type) {
+	case *object.Boolean:
+		if realRight.Value == true {
+			return FALSE
+		} else {
+			return TRUE
+		}
+	case *object.Integer:
+		if realRight.Value == 0 {
+			return TRUE
+		} else {
+			return FALSE
+		}
+	case *object.Null:
 		return TRUE
 	default:
 		return FALSE
 	}
 }
 
-// switch realRight := right.(type) {
-// case *object.Boolean:
-// 	if realRight.Value == true {
-// 		return FALSE
-// 	} else {
-// 		return TRUE
-// 	}
-// case *object.Integer:
-// 	if realRight.Value == 0 {
-// 		return TRUE
-// 	} else {
-// 		return FALSE
-// 	}
-// case *object.Null:
-// 	return TRUE
-// default:
-// 	return FALSE
-// }
+// <-><Integer> -> -integer object
+func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
+	if right.Type() != object.INTEGER_OBJ {
+		return NULL
+	}
+	value := right.(*object.Integer).Value
+	return &object.Integer{Value: -value}
+}
+
+func evalInfixExpression(left, right object.Object, operator string) object.Object {
+	switch {
+	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
+		return evalIntegerInfixExpression(left, right, operator)
+	default:
+		return NULL
+	}
+}
+
+func evalIntegerInfixExpression(left, right object.Object, operator string) object.Object {
+	leftVal := left.(*object.Integer).Value
+	rightVal := right.(*object.Integer).Value
+	
+	switch operator {
+	case "+":
+		return &object.Integer{Value: leftVal + rightVal}
+	case "-":
+		return &object.Integer{Value: leftVal - rightVal}
+	case "*":
+		return &object.Integer{Value: leftVal * rightVal}
+	case "/":
+		return &object.Integer{Value: leftVal / rightVal}
+	default:
+		return NULL
+	}
+}
+
