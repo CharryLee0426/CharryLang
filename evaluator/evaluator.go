@@ -32,6 +32,10 @@ func Eval(node ast.Node) object.Object {
 		left := Eval(node.Left)
 		right := Eval(node.Right)
 		return evalInfixExpression(left, right, node.Operator)
+	case *ast.IfExpression:
+		return evalIfExpression(node)
+	case *ast.BlockStatement:
+		return evalStatements(node.Statements)
 	}
 
 	return nil
@@ -129,11 +133,44 @@ func evalIntegerInfixExpression(left, right object.Object, operator string) obje
 	}
 }
 
+func evalIfExpression(ie *ast.IfExpression) object.Object {
+	condition := Eval(ie.Condition)
+	if isTruthy(condition) {
+		return Eval(ie.Consequence)
+	} else if ie.Alternative != nil {
+		return Eval(ie.Alternative)
+	} else {
+		return NULL
+	}
+}
+
+// tool function
+
 // it can let us use TRUE or FALSE only 2 addresses
 func nativeBoolToBooleanObject(native bool) object.Object {
 	if native {
 		return TRUE
 	} else {
 		return FALSE
+	}
+}
+
+// justify if one expression is true
+func isTruthy(obj object.Object) bool {
+	// handle if the obj is integer zero
+	if obj.Type() == object.INTEGER_OBJ {
+		if obj.(*object.Integer).Value == 0 {
+			return false
+		}
+	}
+	switch obj {
+	case NULL:
+		return false
+	case TRUE:
+		return true
+	case FALSE:
+		return false
+	default:
+		return true
 	}
 }
