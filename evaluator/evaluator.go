@@ -19,7 +19,21 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalProgram(node.Statements, env)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, env)
-
+	case *ast.LetStatement:
+		val := Eval(node.Value, env)
+		if isError(val) {
+			return val
+		}
+		env.Set(node.Name.Value, val)
+	case *ast.BlockStatement:
+		return evalBlockStatements(node.Statements, env)
+	case *ast.ReturnStatement:
+		val := Eval(node.ReturnValue, env)
+		if isError(val) {
+			return val
+		}
+		return &object.ReturnType{Value: val}
+	
 	// expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
@@ -44,14 +58,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(left, right, node.Operator)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
-	case *ast.BlockStatement:
-		return evalBlockStatements(node.Statements, env)
-	case *ast.ReturnStatement:
-		val := Eval(node.ReturnValue, env)
-		if isError(val) {
-			return val
-		}
-		return &object.ReturnType{Value: val}
+	case *ast.Identifier:
+		return evalIdentifier(node, env)
 	}
 
 	return nil
@@ -189,6 +197,15 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 	} else {
 		return NULL
 	}
+}
+
+func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
+	val, ok := env.Get(node.Value)
+	if !ok {
+		return newError("identifier not found: " + node.Value)
+	}
+
+	return val
 }
 
 // tool function
