@@ -196,6 +196,24 @@ func TestFunctionObject(t *testing.T) {
 	}
 }
 
+func TestFunctionApplication(t *testing.T) {
+	tests := []struct {
+		input string
+		expected int64
+	} {
+		{"let identity = fn(x) { x; }; identity(4);", 4},
+		{"let identity = fn(x) { return x; }; identity(13);", 13},
+		{"let double = fn(x) { x * 2; }; double(5);", 10},
+		{"let add = fn(x, y) { x + y; }; add(5, 4);", 9},
+		{"let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
+		{"fn(x) { x; }(4)", 4},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
+
 // tool test functions
 func testEval(input string) object.Object {
 	l := lexer.New(input)
