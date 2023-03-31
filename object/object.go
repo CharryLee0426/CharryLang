@@ -16,6 +16,7 @@ const (
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ = "ERROR"
 	FUNCTION_OBJ = "FUNCTION"
+	STRING_OBJ = "STRING"
 )
 
 type Object interface {
@@ -38,6 +39,12 @@ func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
 type Null struct {}
 func (n *Null) Inspect() string { return "null" }
 func (n *Null) Type() ObjectType { return NULL_OBJ }
+
+type String struct {
+	Value string
+}
+func (s *String) Inspect() string { return s.Value }
+func (s *String) Type() ObjectType { return STRING_OBJ }
 
 type ReturnType struct {
 	Value Object
