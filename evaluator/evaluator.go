@@ -37,6 +37,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	// expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
 	case *ast.Boolean:
 		// return &object.Boolean{Value: node.Value} BAD IMPLEMENTATION! TOO MANY SAME OBEJCTS IN OUR MEMORY
 		return nativeBoolToBooleanObject(node.Value)
