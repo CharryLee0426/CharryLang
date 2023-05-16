@@ -27,7 +27,7 @@ let one = 1;
 let name = "charry";
 let expression = 10 * (20 / 2);
 let array = [1, 2, 3];
-let hashmap = {"name": "bob", "age", 12};
+let hashmap = {"name": "bob", "age": 12};
 hashmap["age"]; // => 12
 let minus = fn(a, b) { return a-b; };
 minus(2,3);
@@ -39,6 +39,14 @@ let addTwo = fn(x) {
 };
 twice(addTwo, 2);   // => 6
 ```
+
+Running results on my computer:
+
+![](./docs/diagram/out/Result1.png)
+![](./docs/diagram/out/Result2.png)
+![](./docs/diagram/out/Result3.png)
+
+There are some simple tips for error handling.
 
 ## 3. Dive into charrylang's interpreter
 
